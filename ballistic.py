@@ -109,7 +109,7 @@ while True:
     print('Error!')
     sys.exit(0)
 
-### Inpute of Target Coordinates
+### Input of Target Coordinates
 rechoice= True
 while rechoice == True:
   rawCooSelf= input('Coordinates target: [xxxx yyyy h]: ')
@@ -119,6 +119,7 @@ while rechoice == True:
     t_range= 10*math.sqrt((cooT_x - cooB_x)**2 + (cooT_y - cooB_y)**2)
     print(t_range)
     if t_range <= max(maxDist[vehType]) and t_range >= minDist[vehType][0]:
+	  # Calculating angles of attack
       findTheta(vehType, cooB_x, cooB_y, cooB_h, cooT_x, cooT_y, cooT_h)
       rej= input('Next target? y/n ')
       if rej == 'y':
@@ -132,10 +133,6 @@ while rechoice == True:
   else:
     print('Error!')
     sys.exit(0)
-
-
-
-
 
 
 
