@@ -1,6 +1,7 @@
 # Ballistic calculator for  ArmA III, tested with Python 3.5.1
 # Muzzle velocities by SMPCrafter and SirJanzelot
-# todo: check(vel_veh), Crosswind, MRSI
+# todo: check(vel_veh), Crosswind, MRSI, testing
+# Bugs: M5 MLRS not working
 
 # version: 0.02
 # lchange: 2016-07-18 0917h
@@ -16,7 +17,7 @@ g= 9.80665
 # MK6 Mortar, M5 MLRS, M4 Scorcher, 2S9 Sochor
 # Muzzle velocities:
 velVeh= [[70, 140, 0, 0, 0],\
-         [212.5, 425, 637.5, 772.5, 0],\
+         [212.5, 425, 637.5, 850, 0],\
          [153.9, 243, 388.8, 648, 810],\
          [153.9, 243, 388.8, 648, 810]]
 # Maximum shooting distance:
@@ -40,11 +41,9 @@ def findTheta(vT, B_x, B_y, B_h, T_x, T_y, T_h):
       f_mode= murot
       v= velVeh[vT][murot]
       break
-  highTheta= math.atan((v**2 + math.sqrt(v**4 - g*(g*t_range**2 + 2*alt_diff*v**2)))/(g*t_range))
+  highTheta= math.atan((v**2 + math.sqrt(abs(v**4 - g*(g*t_range**2 + 2*alt_diff*v**2))))/(g*t_range))
   highWinkelVer= (highTheta*360)/(2*math.pi)
-  if f_mode == 1:
-    highWinkelVer= highWInkelVer - 1.58
-  lowTheta= math.atan((v**2 - math.sqrt(v**4 - g*(g*t_range**2 + 2*alt_diff*v**2)))/(g*t_range))
+  lowTheta= math.atan((v**2 - math.sqrt(abs(v**4 - g*(g*t_range**2 + 2*alt_diff*v**2))))/(g*t_range))
   lowWinkelVer= (lowTheta*360)/(2*math.pi)
   if (T_x - B_x) >= 0:
     grad= 90;
@@ -55,7 +54,7 @@ def findTheta(vT, B_x, B_y, B_h, T_x, T_y, T_h):
   tudhigh=   t_range/(v*math.cos(highTheta))
   print('Vert: low: {:.2f}° high: {:.2f}°'.format(lowWinkelVer, highWinkelVer))
   print('Hor: {:.2f}\nToF: low: {:.1f}s high: {:.1f}s'.format(winkelHor, tudlow, tudhigh))
-  print('Use Mode: {:d}\nRange: {:.0f}m'.format(f_mode+1, t_range*10))
+  print('Use Mode: {:d}\nRange: {:.0f}m'.format(f_mode+1, t_range))
 
 ### Checking input coordinates
 def chckInpCoo(inStr):
@@ -86,6 +85,7 @@ def chckInpCoo(inStr):
 
 ### Which Battery type?
 print('WARNING! Make sure to be on an even surface!')
+print('M5 MRLS not working properly right now.')
 while True:
   rwInVeh= input('1:MK6, 2:M5 MLRS, 3:M4 Scorcher, 4:2S9 Sochor: ')
   if(str.isdecimal(rwInVeh)):
