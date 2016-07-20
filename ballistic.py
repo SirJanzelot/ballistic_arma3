@@ -1,10 +1,10 @@
-# Ballistic calculator for  ArmA III, tested with Python 3.5.1
+# Ballistic calculator for  ArmA III (1.62.137494), tested with Python 3.5.1
 # Muzzle velocities by SMPCrafter and SirJanzelot
-# todo: check(vel_veh), Crosswind, MRSI, testing
-# Bugs: M5 MLRS not working
+# todo: Crosswind, MRSI, testing
+# Bugs: M5 MLRS not working | general deviation
 
-# version: 0.02
-# lchange: 2016-07-18 0917h
+# version: 0.03
+# lchange: 2016-07-18 1946h
 
 import math
 import sys
@@ -16,7 +16,7 @@ g= 9.80665
 
 # MK6 Mortar, M5 MLRS, M4 Scorcher, 2S9 Sochor
 # Muzzle velocities:
-velVeh= [[70, 140, 0, 0, 0],\
+velVeh= [[70, 140, 200, 0, 0],\
          [212.5, 425, 637.5, 850, 0],\
          [153.9, 243, 388.8, 648, 810],\
          [153.9, 243, 388.8, 648, 810]]
@@ -28,7 +28,7 @@ maxDist= [[499, 1998, 4078, 0, 0],\
 # Minimal shooting distance:
 minDist= [[34, 139, 284, 0, 0],\
           [799, 3918, 7196, 12793, 0],\
-          [826, 2059, 5271, 14644, 22881],\
+          [809, 2059, 5271, 14644, 22881],\
           [826, 2059, 5271, 14644, 22881]]
 
 
@@ -50,11 +50,15 @@ def findTheta(vT, B_x, B_y, B_h, T_x, T_y, T_h):
   elif (T_x - B_x) <= 0:
     grad= 270;
   winkelHor= grad - math.atan((T_y - B_y)/(T_x - B_x))*360/(2*math.pi)
+  print(lowTheta)
+  print(highTheta)
+  print(lowWinkelVer)
+  print(highWinkelVer)
   tudlow=    t_range/(v*math.cos(lowTheta))
   tudhigh=   t_range/(v*math.cos(highTheta))
   print('Vert: low: {:.2f}° high: {:.2f}°'.format(lowWinkelVer, highWinkelVer))
   print('Hor: {:.2f}\nToF: low: {:.1f}s high: {:.1f}s'.format(winkelHor, tudlow, tudhigh))
-  print('Use Mode: {:d}\nRange: {:.0f}m'.format(f_mode+1, t_range))
+  print('Use Mode: {:d}\nRange: {:.0f}m'.format(f_mode + 1, t_range))
 
 ### Checking input coordinates
 def chckInpCoo(inStr):
@@ -80,7 +84,6 @@ def chckInpCoo(inStr):
   else:
     # Number of Input items wrong
     status= 4
-  print('Status: {0}'.format(status))
   return status
 
 ### Which Battery type?
@@ -106,13 +109,12 @@ while True:
     cooB_x, cooB_y, cooB_h= map(int, rawCooSelf.split(' '))
     break
   else:
-    print('Error!')
-    sys.exit(0)
+    print('Error - Coordinates are messed up!')
 
 ### Input of Target Coordinates
 rechoice= True
 while rechoice == True:
-  rawCooSelf= input('Coordinates target: [xxxx yyyy h]: ')
+  rawCooSelf= input('Coordinates target:  [xxxx yyyy h]: ')
   status= chckInpCoo(rawCooSelf)
   if status != '1':
     cooT_x, cooT_y, cooT_h= map(int, rawCooSelf.split(' '))
@@ -126,13 +128,14 @@ while rechoice == True:
         rechoice = True
       elif rej == 'n':
         rechoice = False
+        print('Have phun!')
+        sys.exit(0)
       else:
         print('Error, wrong input')
     else:
       print('Target out of range!')
   else:
-    print('Error!')
-    sys.exit(0)
+    print('Error - Coordinates are messed up!')
 
 
 
