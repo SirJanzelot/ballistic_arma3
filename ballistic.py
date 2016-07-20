@@ -3,8 +3,8 @@
 # todo: Crosswind, MRSI, testing
 # Bugs: M5 MLRS not working | general deviation
 
-# version: 0.03
-# lchange: 2016-07-18 1946h
+# version: 0.04
+# lchange: 2016-07-20 1129h
 
 import math
 import sys
@@ -50,10 +50,6 @@ def findTheta(vT, B_x, B_y, B_h, T_x, T_y, T_h):
   elif (T_x - B_x) <= 0:
     grad= 270;
   winkelHor= grad - math.atan((T_y - B_y)/(T_x - B_x))*360/(2*math.pi)
-  print(lowTheta)
-  print(highTheta)
-  print(lowWinkelVer)
-  print(highWinkelVer)
   tudlow=    t_range/(v*math.cos(lowTheta))
   tudhigh=   t_range/(v*math.cos(highTheta))
   print('Vert: low: {:.2f}° high: {:.2f}°'.format(lowWinkelVer, highWinkelVer))
@@ -119,7 +115,6 @@ while rechoice == True:
   if status != '1':
     cooT_x, cooT_y, cooT_h= map(int, rawCooSelf.split(' '))
     t_range= 10*math.sqrt((cooT_x - cooB_x)**2 + (cooT_y - cooB_y)**2)
-    print(t_range)
     if t_range <= max(maxDist[vehType]) and t_range >= minDist[vehType][0]:
 	  # Calculating angles of attack
       findTheta(vehType, cooB_x, cooB_y, cooB_h, cooT_x, cooT_y, cooT_h)
