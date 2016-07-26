@@ -1,10 +1,11 @@
 # Ballistic calculator for  ArmA III (1.62.137494), tested with Python 3.5.1
 # Muzzle velocities by SMPCrafter and SirJanzelot
 # todo: Crosswind, MRSI, testing
-# Bugs: M5 MLRS not working | general deviation
+# Bugs: M5 MLRS not working properly | low angular 
+# Suggestions: GUI, calibration, range and diff, 6digits
 
-# version: 0.04
-# lchange: 2016-07-20 1129h
+# version: 0.05
+# lchange: 2016-07-25 1441h
 
 import math
 import sys
@@ -12,7 +13,8 @@ import sys
 
 
 # Graviational constant:
-g= 9.80665
+# g= 9.80665
+g= 9.89
 
 # MK6 Mortar, M5 MLRS, M4 Scorcher, 2S9 Sochor
 # Muzzle velocities:
@@ -32,7 +34,7 @@ minDist= [[34, 139, 284, 0, 0],\
           [826, 2059, 5271, 14644, 22881]]
 
 
-### Finding the angle of attack
+### Finding the angle of attack with coordinates
 def findTheta(vT, B_x, B_y, B_h, T_x, T_y, T_h):
   alt_diff= T_h - B_h
   t_range= 10*math.sqrt((T_x - B_x)**2 + (T_y - B_y)**2)
@@ -41,8 +43,10 @@ def findTheta(vT, B_x, B_y, B_h, T_x, T_y, T_h):
       f_mode= murot
       v= velVeh[vT][murot]
       break
+  # High angle of attack
   highTheta= math.atan((v**2 + math.sqrt(abs(v**4 - g*(g*t_range**2 + 2*alt_diff*v**2))))/(g*t_range))
   highWinkelVer= (highTheta*360)/(2*math.pi)
+  # Low angle of attack
   lowTheta= math.atan((v**2 - math.sqrt(abs(v**4 - g*(g*t_range**2 + 2*alt_diff*v**2))))/(g*t_range))
   lowWinkelVer= (lowTheta*360)/(2*math.pi)
   if (T_x - B_x) >= 0:
@@ -52,9 +56,15 @@ def findTheta(vT, B_x, B_y, B_h, T_x, T_y, T_h):
   winkelHor= grad - math.atan((T_y - B_y)/(T_x - B_x))*360/(2*math.pi)
   tudlow=    t_range/(v*math.cos(lowTheta))
   tudhigh=   t_range/(v*math.cos(highTheta))
-  print('Vert: low: {:.2f}° high: {:.2f}°'.format(lowWinkelVer, highWinkelVer))
+  print('Vert: low: {:.3f}° high: {:.3f}°'.format(lowWinkelVer, highWinkelVer))
   print('Hor: {:.2f}\nToF: low: {:.1f}s high: {:.1f}s'.format(winkelHor, tudlow, tudhigh))
   print('Use Mode: {:d}\nRange: {:.0f}m'.format(f_mode + 1, t_range))
+
+### Finding the angel of attack with given range and elevation angle
+def findThetaRange(vT, dist, phi):
+  # Work in progress!
+  # High angle of attack
+  highTheta= math.atan((v**2 + math.sqrt(v**4 - g*(g*dist**2*math.cos(phi)**2 + 2*v**2*dist*math.sin(phi))))/(g*dist*math.cos(phi)))
 
 ### Checking input coordinates
 def chckInpCoo(inStr):
